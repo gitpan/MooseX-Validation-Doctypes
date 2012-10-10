@@ -3,7 +3,7 @@ BEGIN {
   $MooseX::Meta::TypeConstraint::Doctype::AUTHORITY = 'cpan:DOY';
 }
 {
-  $MooseX::Meta::TypeConstraint::Doctype::VERSION = '0.01';
+  $MooseX::Meta::TypeConstraint::Doctype::VERSION = '0.02';
 }
 use Moose;
 # ABSTRACT: Moose type constraint for validating doctypes
@@ -150,21 +150,51 @@ MooseX::Meta::TypeConstraint::Doctype - Moose type constraint for validating doc
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 
   use MooseX::Validation::Doctypes;
 
+  doctype 'Location' => {
+      id      => 'Str',
+      city    => 'Str',
+      state   => 'Str',
+      country => 'Str',
+      zipcode => 'Int',
+  };
+
   doctype 'Person' => {
       id    => 'Str',
-      name  => 'Str',
-      title => 'Str',
+      name  => {
+          # ... nested data structures
+          first_name => 'Str',
+          last_name  => 'Str',
+      },
+      title   => 'Str',
+      # ... complex Moose types
+      friends => 'ArrayRef[Person]',
+      # ... using doctypes same as regular types
+      address => 'Maybe[Location]',
   };
 
   use JSON;
 
-  my $data = decode_json('{"id": "1234-A", "name": "Bob", "title": "CIO"}');
+  # note the lack of Location,
+  # which is fine because it
+  # was Maybe[Location]
+
+  my $data = decode_json(q[
+      {
+          "id": "1234-A",
+          "name": {
+              "first_name" : "Bob",
+              "last_name"  : "Smith",
+           },
+          "title": "CIO",
+          "friends" : [],
+      }
+  ]);
 
   use Moose::Util::TypeConstraints;
 
