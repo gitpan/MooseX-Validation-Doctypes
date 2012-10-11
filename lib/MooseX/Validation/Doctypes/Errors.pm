@@ -3,10 +3,12 @@ BEGIN {
   $MooseX::Validation::Doctypes::Errors::AUTHORITY = 'cpan:DOY';
 }
 {
-  $MooseX::Validation::Doctypes::Errors::VERSION = '0.02';
+  $MooseX::Validation::Doctypes::Errors::VERSION = '0.03';
 }
 use Moose;
 # ABSTRACT: error class for MooseX::Validation::Doctypes
+
+use overload '""' => 'stringify';
 
 
 
@@ -20,6 +22,61 @@ has extra_data => (
     is        => 'ro',
     predicate => 'has_extra_data',
 );
+
+
+sub TO_JSON {
+    my $self = shift;
+
+    return {
+        ($self->has_errors     ? (errors     => $self->errors)     : ()),
+        ($self->has_extra_data ? (extra_data => $self->extra_data) : ()),
+    };
+}
+
+
+sub stringify {
+    my $self = shift;
+
+    return join(
+        "\n",
+        (sort $self->_stringify_ref($self->errors)),
+        $self->_stringify_extra_data($self->extra_data),
+    );
+}
+
+sub _stringify_ref {
+    my $self = shift;
+    my ($data) = @_;
+
+    return
+        if !defined $data;
+
+    return $data
+        if !ref $data;
+
+    return map { $self->_stringify_ref($_) } values %$data
+        if ref($data) eq 'HASH';
+
+    return map { $self->_stringify_ref($_) } @$data
+        if ref($data) eq 'ARRAY';
+
+    return "unknown data: $data";
+}
+
+sub _stringify_extra_data {
+    my $self = shift;
+    my ($data) = @_;
+
+    return
+        unless defined $data;
+
+    require Data::Dumper;
+    local $Data::Dumper::Terse = 1;
+    my $string = Data::Dumper::Dumper($data);
+    chomp($string);
+
+    return ("extra data found:", $string);
+}
 
 __PACKAGE__->meta->make_immutable;
 no Moose;
@@ -35,7 +92,7 @@ MooseX::Validation::Doctypes::Errors - error class for MooseX::Validation::Docty
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -126,6 +183,17 @@ constraints.
 
 Returns true if any extra data was found when comparing the data to the
 doctype.
+
+=head2 TO_JSON
+
+Returns a hashref with keys of C<errors> and C<extra_data>, containing the
+values of those attributes. This allows L<JSON> to properly encode the error
+object.
+
+=head2 stringify
+
+Returns a human-readable string containing the error data in the object. This
+is used for the stringification overload.
 
 =head1 AUTHOR
 

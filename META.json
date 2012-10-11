@@ -21,12 +21,14 @@
       },
       "runtime" : {
          "requires" : {
+            "Data::Dumper" : "0",
             "Devel::PartialDump" : "0",
             "Moose" : "0",
             "Moose::Meta::TypeConstraint" : "0",
             "Moose::Util::TypeConstraints" : "0",
             "Scalar::Util" : "0",
             "Sub::Exporter" : "0",
+            "overload" : "0",
             "strict" : "0",
             "warnings" : "0"
          }
@@ -55,7 +57,7 @@
          "web" : "https://github.com/doy/moosex-validation-doctypes"
       }
    },
-   "version" : "0.02",
+   "version" : "0.03",
    "x_Dist_Zilla" : {
       "plugins" : [
          {

@@ -12,7 +12,9 @@ lib/MooseX/Validation/Doctypes/Errors.pm
 t/00-compile.t
 t/basic.t
 t/complex.t
+t/json.t
 t/more-basic.t
+t/stringify.t
 xt/release/eol.t
 xt/release/no-tabs.t
 xt/release/pod-coverage.t

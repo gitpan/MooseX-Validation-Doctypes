@@ -27,16 +27,18 @@ my %WriteMakefileArgs = (
   "LICENSE" => "mit",
   "NAME" => "MooseX::Validation::Doctypes",
   "PREREQ_PM" => {
+    "Data::Dumper" => 0,
     "Devel::PartialDump" => 0,
     "Moose" => 0,
     "Moose::Meta::TypeConstraint" => 0,
     "Moose::Util::TypeConstraints" => 0,
     "Scalar::Util" => 0,
     "Sub::Exporter" => 0,
+    "overload" => 0,
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.02",
+  "VERSION" => "0.03",
   "test" => {
     "TESTS" => "t/*.t"
   }
