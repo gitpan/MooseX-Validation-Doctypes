@@ -3,7 +3,7 @@ BEGIN {
   $MooseX::Validation::Doctypes::AUTHORITY = 'cpan:DOY';
 }
 {
-  $MooseX::Validation::Doctypes::VERSION = '0.03';
+  $MooseX::Validation::Doctypes::VERSION = '0.04';
 }
 use strict;
 use warnings;
@@ -53,7 +53,7 @@ MooseX::Validation::Doctypes - validation of nested data structures with Moose t
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 SYNOPSIS
 

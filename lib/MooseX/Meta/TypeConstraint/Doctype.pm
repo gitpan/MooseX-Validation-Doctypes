@@ -3,7 +3,7 @@ BEGIN {
   $MooseX::Meta::TypeConstraint::Doctype::AUTHORITY = 'cpan:DOY';
 }
 {
-  $MooseX::Meta::TypeConstraint::Doctype::VERSION = '0.03';
+  $MooseX::Meta::TypeConstraint::Doctype::VERSION = '0.04';
 }
 use Moose;
 # ABSTRACT: Moose type constraint for validating doctypes
@@ -150,7 +150,7 @@ MooseX::Meta::TypeConstraint::Doctype - Moose type constraint for validating doc
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 SYNOPSIS
 
