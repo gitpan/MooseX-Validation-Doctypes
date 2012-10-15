@@ -3,7 +3,7 @@ BEGIN {
   $MooseX::Validation::Doctypes::AUTHORITY = 'cpan:DOY';
 }
 {
-  $MooseX::Validation::Doctypes::VERSION = '0.04';
+  $MooseX::Validation::Doctypes::VERSION = '0.05';
 }
 use strict;
 use warnings;
@@ -12,9 +12,9 @@ use warnings;
 use MooseX::Meta::TypeConstraint::Doctype;
 
 use Sub::Exporter -setup => {
-    exports => ['doctype'],
+    exports => ['doctype', 'maybe_doctype'],
     groups => {
-        default => ['doctype'],
+        default => ['doctype', 'maybe_doctype'],
     },
 };
 
@@ -42,6 +42,29 @@ sub doctype {
 }
 
 
+sub maybe_doctype {
+    my $name;
+    $name = shift if @_ > 1;
+
+    my ($doctype) = @_;
+
+    # XXX validate name
+
+    my $args = {
+        ($name ? (name => $name) : ()),
+        doctype            => $doctype,
+        package_defined_in => scalar(caller),
+        maybe              => 1,
+    };
+
+    my $tc = MooseX::Meta::TypeConstraint::Doctype->new($args);
+    Moose::Util::TypeConstraints::register_type_constraint($tc)
+        if $name;
+
+    return $tc;
+}
+
+
 1;
 
 __END__
@@ -53,7 +76,7 @@ MooseX::Validation::Doctypes - validation of nested data structures with Moose t
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 SYNOPSIS
 
@@ -111,6 +134,8 @@ version 0.04
 
 =head1 DESCRIPTION
 
+NOTE: The API for this module is still in flux as I try to decide on how it should work. You have been warned!
+
 This module allows you to declare L<Moose> type constraints to validate nested
 data structures as you may get back from a JSON web service or something along
 those lines. The doctype declaration can be any arbitrarily nested structure of
@@ -125,6 +150,24 @@ structure.
 
 Declares a new doctype type constraint. C<$name> is optional, and if it is not
 given, an anonymous type constraint is created instead.
+
+=head2 maybe_doctype $name, $doctype
+
+Identical to C<doctype>, except that undefined values are also allowed. This is
+useful when nesting doctypes, as in:
+
+  doctype 'Person' => {
+      id      => 'Str',
+      name    => maybe_doctype({
+          first => 'Str',
+          last  => 'Str',
+      }),
+      address => 'Str',
+  };
+
+This way, C<< { first => 'Bob', last => 'Smith' } >> is a valid name, and it's
+also valid to not provide a name, but an invalid name will still throw an
+error.
 
 =head1 BUGS
 

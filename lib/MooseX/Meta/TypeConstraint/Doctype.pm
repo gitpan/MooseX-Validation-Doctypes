@@ -3,7 +3,7 @@ BEGIN {
   $MooseX::Meta::TypeConstraint::Doctype::AUTHORITY = 'cpan:DOY';
 }
 {
-  $MooseX::Meta::TypeConstraint::Doctype::VERSION = '0.04';
+  $MooseX::Meta::TypeConstraint::Doctype::VERSION = '0.05';
 }
 use Moose;
 # ABSTRACT: Moose type constraint for validating doctypes
@@ -25,6 +25,11 @@ has doctype => (
     is       => 'ro',
     isa      => 'Ref',
     required => 1,
+);
+
+has maybe => (
+    is  => 'ro',
+    isa => 'Bool',
 );
 
 has '+parent' => (
@@ -59,8 +64,11 @@ sub _validate_doctype {
 
     match_on_type $doctype => (
         'HashRef' => sub {
-            if (!find_type_constraint('HashRef')->check($data)) {
-                $errors = $data;
+            if ($self->maybe && !defined($data)) {
+                # ignore it
+            }
+            elsif (!find_type_constraint('HashRef')->check($data)) {
+                $errors = $self->_format_error($data, $prefix);
             }
             else {
                 for my $key (keys %$doctype) {
@@ -89,8 +97,11 @@ sub _validate_doctype {
             }
         },
         'ArrayRef' => sub {
-            if (!find_type_constraint('ArrayRef')->check($data)) {
-                $errors = $data;
+            if ($self->maybe && !defined($data)) {
+                # ignore it
+            }
+            elsif (!find_type_constraint('ArrayRef')->check($data)) {
+                $errors = $self->_format_error($data, $prefix);
             }
             else {
                 for my $i (0..$#$doctype) {
@@ -120,8 +131,15 @@ sub _validate_doctype {
         'Str|Moose::Meta::TypeConstraint' => sub {
             my $tc = Moose::Util::TypeConstraints::find_or_parse_type_constraint($doctype);
             die "Unknown type $doctype" unless $tc;
-            if (!$tc->check($data)) {
-                $errors = "invalid value " . dump($data) . " for '$prefix'";
+            if ($tc->isa(__PACKAGE__)) {
+                my $sub_errors = $tc->_validate_doctype($data, undef, $prefix);
+                if ($sub_errors) {
+                    $errors = $sub_errors->errors;
+                    $extra_data = $sub_errors->extra_data;
+                }
+            }
+            elsif (!$tc->check($data)) {
+                $errors = $self->_format_error($data, $prefix);
             }
         },
         => sub {
@@ -137,6 +155,13 @@ sub _validate_doctype {
     );
 }
 
+sub _format_error {
+    my $self = shift;
+    my ($data, $prefix) = @_;
+
+    return "invalid value " . dump($data) . " for '$prefix'";
+}
+
 no Moose;
 
 1;
@@ -150,7 +175,7 @@ MooseX::Meta::TypeConstraint::Doctype - Moose type constraint for validating doc
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 SYNOPSIS
 

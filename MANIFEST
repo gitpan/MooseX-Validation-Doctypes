@@ -13,7 +13,9 @@ t/00-compile.t
 t/basic.t
 t/complex.t
 t/json.t
+t/maybe-doctype.t
 t/more-basic.t
+t/nested.t
 t/stringify.t
 xt/release/eol.t
 xt/release/no-tabs.t

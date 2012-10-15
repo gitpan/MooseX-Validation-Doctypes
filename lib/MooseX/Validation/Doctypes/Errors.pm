@@ -3,7 +3,7 @@ BEGIN {
   $MooseX::Validation::Doctypes::Errors::AUTHORITY = 'cpan:DOY';
 }
 {
-  $MooseX::Validation::Doctypes::Errors::VERSION = '0.04';
+  $MooseX::Validation::Doctypes::Errors::VERSION = '0.05';
 }
 use Moose;
 # ABSTRACT: error class for MooseX::Validation::Doctypes
@@ -92,7 +92,7 @@ MooseX::Validation::Doctypes::Errors - error class for MooseX::Validation::Docty
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 SYNOPSIS
 
